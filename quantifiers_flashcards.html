@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantifiers Flashcards — Teen Edition</title>
+<style>
+  :root {
+    --bg-grad: linear-gradient(135deg, #1e1b4b 0%, #312e81 42%, #4c1d95 75%, #701a75 100%);
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --accent: #6366f1;
+    --accent-dark: #4f46e5;
+    --gold: #f59e0b;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg-grad);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 16px 44px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle glowing ambient orbs */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::before {
+    width: 340px;
+    height: 340px;
+    background: #38bdf8;
+    top: -80px;
+    left: -80px;
+  }
+
+  body::after {
+    width: 380px;
+    height: 380px;
+    background: #f472b6;
+    bottom: -100px;
+    right: -80px;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .top-pill {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #e0e7ff;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 34px;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, #ffffff 0%, #c7d2fe 50%, #fbcfe8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-bottom: 22px;
+    text-align: center;
+  }
+
+  /* Navigation Tabs */
+  .tabs {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(12px);
+    padding: 6px;
+    border-radius: 999px;
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .tab-btn {
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    color: #ffffff;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+    color: #312e81;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Progress Bar */
+  .progress-row {
+    width: 100%;
+    max-width: 540px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 9px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 11%;
+    background: linear-gradient(90deg, #34d399 0%, #38bdf8 100%);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  .progress-text {
+    font-size: 14px;
+    font-weight: 800;
+    color: #e0e7ff;
+    min-width: 58px;
+    text-align: right;
+  }
+
+  /* 3D Flashcard Stage */
+  .card-stage {
+    width: 100%;
+    max-width: 540px;
+    height: 410px;
+    perspective: 1400px;
+    margin-bottom: 22px;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.65s cubic-bezier(0.34, 1.4, 0.64, 1);
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 28px;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.4);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Front Face Styling */
+  .card-front {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  }
+
+  .front-top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .front-tag {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+
+  .front-amount-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .quantifier-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto 0;
+    gap: 14px;
+  }
+
+  .quantifier-word {
+    font-size: 68px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .speak-btn {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 1.5px solid #ddd6fe;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .speak-btn:hover {
+    background: #ede9fe;
+    transform: scale(1.03);
+  }
+
+  .tap-hint {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Back Face Styling — High-Visibility Color-Coded Info Boxes */
+  .card-back {
+    transform: rotateY(180deg);
+    background: #ffffff;
+    padding: 22px 24px;
+  }
+
+  .back-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .back-word-badge {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 900;
+    padding: 6px 20px;
+    border-radius: 14px;
+    box-shadow: 0 6px 14px rgba(79, 70, 229, 0.28);
+  }
+
+  .back-rule-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .info-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: auto 0;
+  }
+
+  /* Box 1: WHEN TO USE (Vibrant Emerald/Teal or Amber Accent) */
+  .info-card {
+    width: 100%;
+    border-radius: 18px;
+    padding: 15px 18px;
+    text-align: left;
+    border-left: 7px solid;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .info-card.when-box {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-left-color: #10b981;
+  }
+
+  .info-card.noun-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-left-color: #3b82f6;
+  }
+
+  .info-card-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    margin-bottom: 6px;
+  }
+
+  .when-box .info-card-title {
+    color: #047857;
+  }
+
+  .noun-box .info-card-title {
+    color: #1d4ed8;
+  }
+
+  .info-card-value {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #0f172a;
+  }
+
+  /* Highlighted inline chips inside the back text */
+  .hl-pos {
+    background: #10b981;
+    color: #ffffff;
+    padding: 2px 9px;
+    border-radius: 7px;
+    font-weight: 900;
+    font-size: 15px;
+    display: inline-block;
+    margin: 1px 0;
+  }
+
+  .hl-neg {
+    background: #ef4444;
+    color: #ffffff;
+    padding: 2px 9px;
+    border-radius: 7px;
+    font-weight: 900;
+    font-size: 15px;
+    display: inline-block;
+    margin: 1px 0;
+  }
+
+  .hl-q {
+    background: #f59e0b;
+    color: #ffffff;
+    padding: 2px 9px;
+    border-radius: 7px;
+    font-weight: 900;
+    font-size: 15px;
+    display: inline-block;
+    margin: 1px 0;
+  }
+
+  .hl-noun-count {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 2px 10px;
+    border-radius: 7px;
+    font-weight: 900;
+    font-size: 15px;
+    display: inline-block;
+    margin: 1px 0;
+  }
+
+  .hl-noun-uncount {
+    background: #7c3aed;
+    color: #ffffff;
+    padding: 2px 10px;
+    border-radius: 7px;
+    font-weight: 900;
+    font-size: 15px;
+    display: inline-block;
+    margin: 1px 0;
+  }
+
+  /* Controls Row */
+  .controls {
+    width: 100%;
+    max-width: 540px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .nav-btn {
+    flex: 1;
+    background: #ffffff;
+    color: #1e1b4b;
+    border: none;
+    padding: 14px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  }
+
+  .shuffle-btn {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    backdrop-filter: blur(8px);
+  }
+
+  .shortcuts {
+    font-size: 13px;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kbd {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  /* TEST MODE STYLING */
+  .test-box {
+    display: none;
+    width: 100%;
+    max-width: 540px;
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 28px;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.32);
+    padding: 26px 26px 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .test-box.active {
+    display: flex;
+  }
+
+  .test-top {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .test-badge {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .score-pill {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .sentence-card {
+    width: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    border: 2px solid #e0e7ff;
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center;
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.45;
+    color: #1e293b;
+  }
+
+  .blank-slot {
+    display: inline-block;
+    min-width: 96px;
+    padding: 2px 12px;
+    margin: 0 4px;
+    border-bottom: 4px solid #6366f1;
+    background: #ffffff;
+    border-radius: 8px;
+    color: #4f46e5;
+    font-weight: 900;
+  }
+
+  .blank-slot.correct {
+    border-bottom-color: #10b981;
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .blank-slot.wrong {
+    border-bottom-color: #ef4444;
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .choices-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .choice-btn {
+    background: #f8fafc;
+    border: 2.5px solid #cbd5e1;
+    color: #1e293b;
+    padding: 15px 14px;
+    border-radius: 16px;
+    font-size: 19px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: #6366f1;
+    background: #eef2ff;
+    color: #4338ca;
+    transform: translateY(-2px);
+  }
+
+  .choice-btn.correct {
+    background: #10b981;
+    border-color: #059669;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+  }
+
+  .choice-btn.wrong {
+    background: #ef4444;
+    border-color: #dc2626;
+    color: #ffffff;
+  }
+
+  .choice-btn:disabled {
+    cursor: default;
+  }
+
+  .feedback-banner {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.4;
+  }
+
+  .feedback-banner.ok {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1.5px solid #6ee7b7;
+  }
+
+  .feedback-banner.err {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1.5px solid #fca5a5;
+  }
+
+  .test-footer {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+  }
+
+  .next-q-btn {
+    flex: 2;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
+  }
+
+  .restart-q-btn {
+    flex: 1;
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 28px; }
+    .card-stage { height: 425px; }
+    .quantifier-word { font-size: 56px; }
+    .info-card-value { font-size: 16px; }
+    .sentence-card { font-size: 20px; padding: 20px 14px; }
+    .choices-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="top-pill">English Grammar &bull; Quantifiers &amp; Articles</div>
+  <h1>Quantifiers Master</h1>
+  <div class="subtitle">Flip each card for color-coded rules, then test your skills!</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-study" onclick="switchTab('study')">&#127183; Flashcards (9)</button>
+    <button class="tab-btn" id="tab-test" onclick="switchTab('test')">&#127919; Practice Test (27)</button>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">1 / 9</div>
+  </div>
+
+  <!-- STUDY VIEW -->
+  <div id="study-view" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div class="card-stage">
+      <div class="card-inner" id="card-inner" onclick="flipCard()">
+
+        <!-- FRONT SIDE: QUANTIFIER -->
+        <div class="card-face card-front">
+          <div class="front-top-bar">
+            <span class="front-tag">Quantifier</span>
+            <span class="front-amount-pill" id="front-amount">Amount: One (1)</span>
+          </div>
+
+          <div class="quantifier-hero">
+            <div class="quantifier-word" id="front-word">a</div>
+            <button class="speak-btn" onclick="speakWord(event)">&#128266; Pronounce</button>
+          </div>
+
+          <div class="tap-hint">&#128070; Tap card to reveal color-coded rules</div>
+        </div>
+
+        <!-- BACK SIDE: HIGH-VISIBILITY COLORED RULES -->
+        <div class="card-face card-back">
+          <div class="back-header">
+            <span class="back-word-badge" id="back-word">a</span>
+            <span class="back-rule-label">Grammar Rule</span>
+          </div>
+
+          <div class="info-stack">
+            <div class="info-card when-box">
+              <div class="info-card-title">&#9989; When to Use</div>
+              <div class="info-card-value" id="back-when"></div>
+            </div>
+
+            <div class="info-card noun-box">
+              <div class="info-card-title">&#128218; Noun Type</div>
+              <div class="info-card-value" id="back-noun"></div>
+            </div>
+          </div>
+
+          <div class="tap-hint">&#128070; Tap card to flip back</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="nav-btn" onclick="prevCard()">&larr; Prev</button>
+      <button class="nav-btn shuffle-btn" onclick="shuffleStudy()">&#128256; Shuffle</button>
+      <button class="nav-btn" onclick="nextCard()">Next &rarr;</button>
+    </div>
+
+    <div class="shortcuts">
+      <span>Shortcuts:</span>
+      <span class="kbd">Space</span> <span>Flip</span>
+      <span>&bull;</span>
+      <span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> <span>Navigate</span>
+    </div>
+  </div>
+
+  <!-- TEST VIEW: 27 SHUFFLED EXAMPLES (3 PER QUANTIFIER) -->
+  <div class="test-box" id="test-view">
+    <div class="test-top">
+      <span class="test-badge" id="test-counter">Question 1 of 27</span>
+      <span class="score-pill" id="test-score">Score: 0</span>
+    </div>
+
+    <div class="sentence-card" id="sentence-card">
+      I have <span class="blank-slot" id="blank-slot">_____</span> skateboard.
+    </div>
+
+    <div class="choices-grid" id="choices-grid"></div>
+
+    <div class="feedback-banner" id="feedback-banner">Choose the best quantifier to complete the sentence!</div>
+
+    <div class="test-footer">
+      <button class="restart-q-btn" onclick="startTest()">&#128256; Reshuffle</button>
+      <button class="next-q-btn" onclick="nextQuestion()">Next Question &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FLASHCARDS = [
+  {
+    word: "a",
+    amount: "One (1)",
+    whenHtml: '<span class="hl-pos">Positive (+)</span>, <span class="hl-neg">Negative (-)</span>, and <span class="hl-q">Questions (?)</span> — means <strong>"one"</strong> (before a consonant sound).',
+    nounHtml: '<span class="hl-noun-count">Singular countable</span> nouns only.'
+  },
+  {
+    word: "an",
+    amount: "One (1)",
+    whenHtml: '<span class="hl-pos">Positive (+)</span>, <span class="hl-neg">Negative (-)</span>, and <span class="hl-q">Questions (?)</span> — means <strong>"one"</strong> (before a vowel sound: a, e, i, o, u).',
+    nounHtml: '<span class="hl-noun-count">Singular countable</span> nouns only.'
+  },
+  {
+    word: "some",
+    amount: "Medium / Unspecified",
+    whenHtml: '<span class="hl-pos">Positive (+)</span> sentences, plus polite <span class="hl-q">Offers &amp; Requests</span>.',
+    nounHtml: '<span class="hl-noun-count">Plural countable</span> &amp; <span class="hl-noun-uncount">Uncountable</span> nouns.'
+  },
+  {
+    word: "any",
+    amount: "Zero or Unknown",
+    whenHtml: '<span class="hl-neg">Negative (-)</span> sentences and <span class="hl-q">Questions (?)</span>.',
+    nounHtml: '<span class="hl-noun-count">Plural countable</span> &amp; <span class="hl-noun-uncount">Uncountable</span> nouns.'
+  },
+  {
+    word: "much",
+    amount: "Big Amount",
+    whenHtml: '<span class="hl-neg">Negative (-)</span> sentences and <span class="hl-q">Questions (?)</span> for <strong>big amounts</strong>.',
+    nounHtml: '<span class="hl-noun-uncount">Uncountable</span> nouns only.'
+  },
+  {
+    word: "many",
+    amount: "Big Amount",
+    whenHtml: '<span class="hl-neg">Negative (-)</span> sentences and <span class="hl-q">Questions (?)</span> for <strong>big amounts</strong>.',
+    nounHtml: '<span class="hl-noun-count">Plural countable</span> nouns only.'
+  },
+  {
+    word: "a lot of",
+    amount: "Big Amount",
+    whenHtml: '<span class="hl-pos">Positive (+)</span> sentences only for <strong>big amounts</strong>.',
+    nounHtml: '<span class="hl-noun-count">Plural countable</span> &amp; <span class="hl-noun-uncount">Uncountable</span> nouns.'
+  },
+  {
+    word: "a few",
+    amount: "Small Amount",
+    whenHtml: '<span class="hl-pos">Positive (+)</span> sentences and <span class="hl-q">Questions (?)</span> for <strong>small amounts</strong>.',
+    nounHtml: '<span class="hl-noun-count">Plural countable</span> nouns only.'
+  },
+  {
+    word: "a little",
+    amount: "Small Amount",
+    whenHtml: '<span class="hl-pos">Positive (+)</span> sentences and <span class="hl-q">Questions (?)</span> for <strong>small amounts</strong>.',
+    nounHtml: '<span class="hl-noun-uncount">Uncountable</span> nouns only.'
+  }
+];
+
+// 27 Teen Examples (3 per quantifier)
+const TEST_QUESTIONS = [
+  // a (3)
+  { before: "I just bought", after: "new skateboard at the mall.", answer: "a", options: ["a", "an", "some", "many"], rule: '"Skateboard" is a singular countable noun starting with a consonant sound.' },
+  { before: "Do you have", after: "charger I can borrow for ten minutes?", answer: "a", options: ["a", "an", "any", "much"], rule: '"Charger" is a singular countable noun starting with a consonant sound.' },
+  { before: "She doesn't own", after: "gaming laptop yet.", answer: "a", options: ["a", "an", "some", "a few"], rule: '"Gaming laptop" is a singular countable noun starting with a consonant sound.' },
+
+  // an (3)
+  { before: "She ate", after: "apple before basketball practice.", answer: "an", options: ["an", "a", "some", "many"], rule: '"Apple" is a singular countable noun starting with a vowel sound.' },
+  { before: "He uploaded", after: "awesome video to his channel.", answer: "an", options: ["an", "a", "any", "a little"], rule: '"Awesome video" is a singular countable noun starting with a vowel sound.' },
+  { before: "Is there", after: "extra controller in your backpack?", answer: "an", options: ["an", "a", "much", "a few"], rule: '"Extra controller" is a singular countable noun starting with a vowel sound.' },
+
+  // some (3)
+  { before: "We bought", after: "snacks for movie night.", answer: "some", options: ["some", "any", "a", "much"], rule: 'Positive (+) sentence with a plural countable noun ("snacks").' },
+  { before: "Would you like", after: "iced coffee while we study?", answer: "some", options: ["some", "any", "many", "a few"], rule: 'Polite offer with an uncountable noun ("iced coffee").' },
+  { before: "Can I get", after: "help with this math problem?", answer: "some", options: ["some", "any", "a", "many"], rule: 'Polite request with an uncountable noun ("help").' },
+
+  // any (3)
+  { before: "I don't have", after: "homework tonight!", answer: "any", options: ["any", "some", "a", "a few"], rule: 'Negative (-) sentence with an uncountable noun ("homework").' },
+  { before: "Are there", after: "concert tickets left online?", answer: "any", options: ["any", "some", "much", "a little"], rule: 'Question (?) with a plural countable noun ("tickets").' },
+  { before: "There isn't", after: "milk left in the fridge.", answer: "any", options: ["any", "some", "many", "a"], rule: 'Negative (-) sentence with an uncountable noun ("milk").' },
+
+  // much (3)
+  { before: "There isn't", after: "time left before the bell rings!", answer: "much", options: ["much", "many", "a few", "a"], rule: 'Negative (-) sentence with an uncountable noun ("time") for a big amount.' },
+  { before: "How", after: "storage space do you have on your phone?", answer: "much", options: ["much", "many", "a few", "an"], rule: 'Question (?) with an uncountable noun ("storage space").' },
+  { before: "We didn't spend", after: "money at the arcade.", answer: "much", options: ["much", "many", "a lot of", "a few"], rule: 'Negative (-) sentence with an uncountable noun ("money").' },
+
+  // many (3)
+  { before: "How", after: "video games do you own?", answer: "many", options: ["many", "much", "a little", "a"], rule: 'Question (?) with a plural countable noun ("video games").' },
+  { before: "There weren't", after: "people at the skatepark today.", answer: "many", options: ["many", "much", "a little", "some"], rule: 'Negative (-) sentence with a plural countable noun ("people").' },
+  { before: "How", after: "unread messages do you have right now?", answer: "many", options: ["many", "much", "a little", "an"], rule: 'Question (?) with a plural countable noun ("unread messages").' },
+
+  // a lot of (3)
+  { before: "She has", after: "followers on her art account.", answer: "a lot of", options: ["a lot of", "much", "a", "an"], rule: 'Positive (+) sentence for a big amount with a plural countable noun ("followers").' },
+  { before: "They drank", after: "water after running in gym class.", answer: "a lot of", options: ["a lot of", "many", "a few", "an"], rule: 'Positive (+) sentence for a big amount with an uncountable noun ("water").' },
+  { before: "Our playlist has", after: "great songs on it.", answer: "a lot of", options: ["a lot of", "much", "a little", "a"], rule: 'Positive (+) sentence for a big amount with a plural countable noun ("songs").' },
+
+  // a few (3)
+  { before: "I just need", after: "minutes to finish getting ready.", answer: "a few", options: ["a few", "a little", "much", "a"], rule: 'Positive (+) sentence for a small amount with a plural countable noun ("minutes").' },
+  { before: "Only", after: "friends came over after school.", answer: "a few", options: ["a few", "a little", "much", "an"], rule: 'Positive (+) sentence for a small amount with a plural countable noun ("friends").' },
+  { before: "Do you have", after: "pencils I could use for the test?", answer: "a few", options: ["a few", "a little", "much", "a"], rule: 'Question (?) for a small amount with a plural countable noun ("pencils").' },
+
+  // a little (3)
+  { before: "Can I have", after: "sugar in my tea, please?", answer: "a little", options: ["a little", "a few", "many", "a"], rule: 'Question (?) for a small amount with an uncountable noun ("sugar").' },
+  { before: "We still have", after: "time before the movie starts.", answer: "a little", options: ["a little", "a few", "many", "an"], rule: 'Positive (+) sentence for a small amount with an uncountable noun ("time").' },
+  { before: "Add", after: "salt to the fries so they taste better.", answer: "a little", options: ["a little", "a few", "many", "a"], rule: 'Positive (+) sentence for a small amount with an uncountable noun ("salt").' }
+];
+
+let studyDeck = [...FLASHCARDS];
+let studyIndex = 0;
+let isFlipped = false;
+
+let shuffledTest = [];
+let qIndex = 0;
+let score = 0;
+let questionLocked = false;
+
+function shuffleArray(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function switchTab(mode) {
+  document.getElementById('tab-study').classList.toggle('active', mode === 'study');
+  document.getElementById('tab-test').classList.toggle('active', mode === 'test');
+
+  if (mode === 'study') {
+    document.getElementById('test-view').classList.remove('active');
+    document.getElementById('study-view').classList.remove('hidden');
+    renderCard();
+  } else {
+    document.getElementById('study-view').classList.add('hidden');
+    document.getElementById('test-view').classList.add('active');
+    startTest();
+  }
+}
+
+function updateProgress(curr, total) {
+  document.getElementById('progress-fill').style.width = ((curr / total) * 100) + '%';
+  document.getElementById('progress-text').textContent = curr + ' / ' + total;
+}
+
+function renderCard() {
+  const card = studyDeck[studyIndex];
+  document.getElementById('card-inner').classList.toggle('flipped', isFlipped);
+  document.getElementById('front-word').textContent = card.word;
+  document.getElementById('front-amount').textContent = 'Amount: ' + card.amount;
+  document.getElementById('back-word').textContent = card.word;
+  document.getElementById('back-when').innerHTML = card.whenHtml;
+  document.getElementById('back-noun').innerHTML = card.nounHtml;
+  updateProgress(studyIndex + 1, studyDeck.length);
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('card-inner').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  isFlipped = false;
+  studyIndex = (studyIndex + 1) % studyDeck.length;
+  renderCard();
+}
+
+function prevCard() {
+  isFlipped = false;
+  studyIndex = (studyIndex - 1 + studyDeck.length) % studyDeck.length;
+  renderCard();
+}
+
+function shuffleStudy() {
+  isFlipped = false;
+  studyDeck = shuffleArray(studyDeck);
+  studyIndex = 0;
+  renderCard();
+}
+
+function speakWord(e) {
+  if (e) e.stopPropagation();
+  const word = studyDeck[studyIndex].word;
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'en-US';
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+  }
+}
+
+/* TEST MODE LOGIC */
+function startTest() {
+  shuffledTest = shuffleArray(TEST_QUESTIONS);
+  qIndex = 0;
+  score = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  questionLocked = false;
+  const q = shuffledTest[qIndex];
+  document.getElementById('test-counter').textContent = `Question ${qIndex + 1} of ${shuffledTest.length}`;
+  document.getElementById('test-score').textContent = `Score: ${score}`;
+  updateProgress(qIndex + 1, shuffledTest.length);
+
+  document.getElementById('sentence-card').innerHTML =
+    `${q.before} <span class="blank-slot" id="blank-slot">_____</span> ${q.after}`;
+
+  const fb = document.getElementById('feedback-banner');
+  fb.className = 'feedback-banner';
+  fb.textContent = 'Tap the best quantifier to fill in the blank!';
+
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  const opts = shuffleArray(q.options);
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'choice-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(btn, opt);
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(clickedBtn, chosen) {
+  if (questionLocked) return;
+  questionLocked = true;
+
+  const q = shuffledTest[qIndex];
+  const slot = document.getElementById('blank-slot');
+  const fb = document.getElementById('feedback-banner');
+  const allBtns = document.querySelectorAll('.choice-btn');
+
+  slot.textContent = chosen;
+
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.answer) {
+      b.classList.add('correct');
+    }
+  });
+
+  if (chosen === q.answer) {
+    score++;
+    document.getElementById('test-score').textContent = `Score: ${score}`;
+    slot.classList.add('correct');
+    fb.className = 'feedback-banner ok';
+    fb.innerHTML = `&#127881; Correct! ${q.rule}`;
+  } else {
+    clickedBtn.classList.add('wrong');
+    slot.classList.add('wrong');
+    fb.className = 'feedback-banner err';
+    fb.innerHTML = `&#10060; Answer: "${q.answer}". ${q.rule}`;
+  }
+}
+
+function nextQuestion() {
+  if (qIndex + 1 >= shuffledTest.length) {
+    shuffledTest = shuffleArray(TEST_QUESTIONS);
+    qIndex = 0;
+    score = 0;
+  } else {
+    qIndex++;
+  }
+  renderQuestion();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('study-view').classList.contains('hidden')) return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    flipCard();
+  } else if (e.code === 'ArrowRight') {
+    nextCard();
+  } else if (e.code === 'ArrowLeft') {
+    prevCard();
+  }
+});
+
+renderCard();
+</script>
+</body>
+</html>
