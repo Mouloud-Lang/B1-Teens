@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History Unsolved — Researcher A Interactive Memory Script</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(125deg, #FF9A9E 0%, #FECFEF 25%, #A1C4FD 55%, #C2E9FB 80%, #D4FC79 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 28px 16px 140px 16px;
+    color: #1E293B;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 32px rgba(31, 38, 135, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #6366F1, #EC4899, #F59E0B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #334155;
+  }
+
+  .sample-cue {
+    background: linear-gradient(120deg, #FEF08A 0%, #FDE047 100%);
+    color: #854D0E;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-weight: 800;
+    border-bottom: 2px solid #EAB308;
+  }
+
+  .controls-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background: #4F46E5;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+  }
+
+  .btn.secondary {
+    background: #FFFFFF;
+    color: #4F46E5;
+    border: 2px solid #C7D2FE;
+    box-shadow: none;
+  }
+
+  .block-card {
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 22px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .block-header {
+    padding: 16px 24px;
+    color: #FFFFFF;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .block-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .block-icon {
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.25);
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  .block-header h2 {
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+
+  .block-header .word {
+    color: #FFFFFF;
+  }
+
+  .block-header .word:hover {
+    background: rgba(255, 255, 255, 0.28);
+    color: #FFFFFF;
+  }
+
+  .stage-note {
+    font-size: 0.88rem;
+    opacity: 0.95;
+    margin-top: 4px;
+    padding-left: 50px;
+    font-weight: 500;
+  }
+
+  .cue-strip {
+    padding: 10px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .cue-label {
+    margin-right: 4px;
+  }
+
+  .cue-pill {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 3px 10px;
+    border-radius: 999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .block-body {
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .line-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #F8FAFC;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .line-card:hover {
+    background: #FFFFFF;
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  }
+
+  .line-icon {
+    font-size: 1.55rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+    background: #FFFFFF;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .line-text {
+    font-size: 1.18rem;
+    line-height: 1.75;
+    color: #1E293B;
+    font-weight: 500;
+  }
+
+  .word {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    display: inline-block;
+  }
+
+  .word:hover {
+    background: #E0E7FF;
+    color: #3730A3;
+    transform: translateY(-1px);
+  }
+
+  .word.key-cue {
+    background: linear-gradient(120deg, #FEF08A 0%, #FDE047 100%);
+    color: #713F12;
+    font-weight: 800;
+    border-bottom: 2.5px solid #EAB308;
+    box-shadow: 0 2px 5px rgba(234, 179, 8, 0.22);
+    margin: 0 1px;
+  }
+
+  .word.key-cue:hover {
+    background: linear-gradient(120deg, #FDE047 0%, #FACC15 100%);
+    color: #422006;
+  }
+
+  .word.active-word {
+    background: #4F46E5 !important;
+    color: #FFFFFF !important;
+    border-bottom-color: #312E81 !important;
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  }
+
+  body.hide-filler .word:not(.key-cue) {
+    color: transparent;
+    background: #E2E8F0;
+    border-radius: 6px;
+    user-select: none;
+  }
+
+  body.hide-filler .word:not(.key-cue):hover {
+    color: #3730A3;
+    background: #E0E7FF;
+  }
+
+  .translator-dock {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 780px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(14px);
+    color: #FFFFFF;
+    border-radius: 20px;
+    padding: 14px 22px;
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.38);
+    border: 1.5px solid rgba(255, 255, 255, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 1000;
+  }
+
+  .dock-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .dock-en {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #FDE047;
+    letter-spacing: 0.3px;
+  }
+
+  .dock-arrow {
+    color: #94A3B8;
+    font-size: 1.2rem;
+  }
+
+  .dock-ru {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #38BDF8;
+  }
+
+  .dock-hint {
+    font-size: 0.95rem;
+    color: #CBD5E1;
+  }
+
+  .speak-btn {
+    background: linear-gradient(135deg, #EC4899, #8B5CF6);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
+    transition: transform 0.15s ease;
+  }
+
+  .speak-btn:hover {
+    transform: scale(1.04);
+  }
+
+  .speak-btn:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 600px) {
+    .line-text { font-size: 1.05rem; }
+    .translator-dock { flex-direction: column; align-items: stretch; text-align: center; }
+    .dock-info { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="hero">
+    <h1>🎙️ History Unsolved — Researcher A Script</h1>
+    <p>Click <strong>any word</strong> to hear its British English pronunciation (en-GB) 🔊 and see its Russian translation below.</p>
+    <div class="legend">
+      <span class="legend-item"><span class="sample-cue">Highlighted Words</span> = Essential Memory Anchors</span>
+      <span class="legend-item">🖼️ Icons = Visual Story Cues</span>
+    </div>
+    <div class="controls-bar">
+      <button class="btn" id="togglePracticeBtn" onclick="togglePracticeMode()">🧠 Memory Test Mode (Hide Filler Words)</button>
+      <button class="btn secondary" id="speedBtn" onclick="speakSlow()">🐢 Slow Pronunciation (0.72x)</button>
+    </div>
+  </header>
+
+  
+    <section class="block-card" id="block1">
+        <div class="block-header" style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+            <div class="block-title-row">
+                <span class="block-icon">🎙️</span>
+                <h2><span class="word" data-clean="block" data-display="BLOCK" onclick="handleWordClick(this)">BLOCK</span> <span class="word" data-clean="1" data-display="1" onclick="handleWordClick(this)">1</span> — <span class="word" data-clean="intro" data-display="INTRO" onclick="handleWordClick(this)">INTRO</span></h2>
+            </div>
+            <div class="stage-note">Say together with the whole team</div>
+        </div>
+        <div class="cue-strip" style="background: #FFE3E3; color: #C92A2A;">
+            <span class="cue-label">🔑 Memory Anchors:</span>
+            <span class="cue-pill">Hello!</span>
+        </div>
+        <div class="block-body">
+            
+        <div class="line-card">
+            <div class="line-icon">👋</div>
+            <div class="line-text">[<span class="word" data-clean="all" data-display="ALL" onclick="handleWordClick(this)">ALL</span>]: <span class="word key-cue" data-clean="hello" data-display="Hello" onclick="handleWordClick(this)">Hello</span>!</div>
+        </div>
+        
+        </div>
+    </section>
+    
+    <section class="block-card" id="block3">
+        <div class="block-header" style="background: linear-gradient(135deg, #4FACFE, #00F2FE);">
+            <div class="block-title-row">
+                <span class="block-icon">🔍</span>
+                <h2><span class="word" data-clean="block" data-display="BLOCK" onclick="handleWordClick(this)">BLOCK</span> <span class="word" data-clean="3" data-display="3" onclick="handleWordClick(this)">3</span> — <span class="word" data-clean="the" data-display="THE" onclick="handleWordClick(this)">THE</span> <span class="word" data-clean="mystery" data-display="MYSTERY" onclick="handleWordClick(this)">MYSTERY</span> &amp; <span class="word" data-clean="leading" data-display="LEADING" onclick="handleWordClick(this)">LEADING</span> <span class="word" data-clean="theories" data-display="THEORIES" onclick="handleWordClick(this)">THEORIES</span></h2>
+            </div>
+            <div class="stage-note">Main presentation of facts and the 3 theories</div>
+        </div>
+        <div class="cue-strip" style="background: #D0EBFF; color: #1864AB;">
+            <span class="cue-label">🔑 Memory Anchors:</span>
+            <span class="cue-pill">Dec 16, 1916</span><span class="cue-pill">Yusupov</span><span class="cue-pill">3 days / 3 bullets</span><span class="cue-pill">Forehead</span><span class="cue-pill">Autopsy lost</span><span class="cue-pill">Purishkevich &amp; Dmitri</span><span class="cue-pill">Oswald Rayner</span><span class="cue-pill">Indestructible Monk</span>
+        </div>
+        <div class="block-body">
+            
+        <div class="line-card">
+            <div class="line-icon">📌</div>
+            <div class="line-text"><span class="word" data-clean="here&#x27;s" data-display="Here’s" onclick="handleWordClick(this)">Here’s</span> <span class="word" data-clean="what" data-display="what" onclick="handleWordClick(this)">what</span> <span class="word" data-clean="we" data-display="we" onclick="handleWordClick(this)">we</span> <span class="word key-cue" data-clean="know" data-display="know" onclick="handleWordClick(this)">know</span> <span class="word" data-clean="for" data-display="for" onclick="handleWordClick(this)">for</span> <span class="word key-cue" data-clean="sure" data-display="sure" onclick="handleWordClick(this)">sure</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🏰</div>
+            <div class="line-text"><span class="word key-cue" data-clean="first" data-display="First" onclick="handleWordClick(this)">First</span>: <span class="word" data-clean="on" data-display="on" onclick="handleWordClick(this)">on</span> <span class="word key-cue" data-clean="december" data-display="December" onclick="handleWordClick(this)">December</span> <span class="word key-cue" data-clean="16th" data-display="16th" onclick="handleWordClick(this)">16th</span>, <span class="word key-cue" data-clean="1916" data-display="1916" onclick="handleWordClick(this)">1916</span>, <span class="word" data-clean="prince" data-display="Prince" onclick="handleWordClick(this)">Prince</span> <span class="word" data-clean="felix" data-display="Felix" onclick="handleWordClick(this)">Felix</span> <span class="word key-cue" data-clean="yusupov" data-display="Yusupov" onclick="handleWordClick(this)">Yusupov</span> <span class="word" data-clean="invited" data-display="invited" onclick="handleWordClick(this)">invited</span> <span class="word" data-clean="rasputin" data-display="Rasputin" onclick="handleWordClick(this)">Rasputin</span> <span class="word" data-clean="to" data-display="to" onclick="handleWordClick(this)">to</span> <span class="word" data-clean="his" data-display="his" onclick="handleWordClick(this)">his</span> <span class="word key-cue" data-clean="palace" data-display="palace" onclick="handleWordClick(this)">palace</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🧊</div>
+            <div class="line-text"><span class="word key-cue" data-clean="second" data-display="Second" onclick="handleWordClick(this)">Second</span>: <span class="word key-cue" data-clean="three" data-display="three" onclick="handleWordClick(this)">three</span> <span class="word key-cue" data-clean="days" data-display="days" onclick="handleWordClick(this)">days</span> <span class="word" data-clean="later" data-display="later" onclick="handleWordClick(this)">later</span>, <span class="word" data-clean="his" data-display="his" onclick="handleWordClick(this)">his</span> <span class="word" data-clean="body" data-display="body" onclick="handleWordClick(this)">body</span> <span class="word" data-clean="was" data-display="was" onclick="handleWordClick(this)">was</span> <span class="word" data-clean="found" data-display="found" onclick="handleWordClick(this)">found</span> <span class="word" data-clean="in" data-display="in" onclick="handleWordClick(this)">in</span> <span class="word" data-clean="a" data-display="a" onclick="handleWordClick(this)">a</span> <span class="word key-cue" data-clean="frozen" data-display="frozen" onclick="handleWordClick(this)">frozen</span> <span class="word key-cue" data-clean="river" data-display="river" onclick="handleWordClick(this)">river</span> <span class="word" data-clean="with" data-display="with" onclick="handleWordClick(this)">with</span> <span class="word key-cue" data-clean="three" data-display="three" onclick="handleWordClick(this)">three</span> <span class="word key-cue" data-clean="bullet" data-display="bullet" onclick="handleWordClick(this)">bullet</span> <span class="word key-cue" data-clean="wounds" data-display="wounds" onclick="handleWordClick(this)">wounds</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🎯</div>
+            <div class="line-text"><span class="word" data-clean="here&#x27;s" data-display="Here’s" onclick="handleWordClick(this)">Here’s</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="real" data-display="real" onclick="handleWordClick(this)">real</span> <span class="word key-cue" data-clean="question" data-display="question" onclick="handleWordClick(this)">question</span>: <span class="word" data-clean="who" data-display="who" onclick="handleWordClick(this)">who</span> <span class="word" data-clean="fired" data-display="fired" onclick="handleWordClick(this)">fired</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="fatal" data-display="fatal" onclick="handleWordClick(this)">fatal</span> <span class="word key-cue" data-clean="shot" data-display="shot" onclick="handleWordClick(this)">shot</span> <span class="word" data-clean="into" data-display="into" onclick="handleWordClick(this)">into</span> <span class="word" data-clean="his" data-display="his" onclick="handleWordClick(this)">his</span> <span class="word key-cue" data-clean="forehead" data-display="forehead" onclick="handleWordClick(this)">forehead</span>?</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">📂</div>
+            <div class="line-text"><span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word" data-clean="strangest" data-display="strangest" onclick="handleWordClick(this)">strangest</span> <span class="word" data-clean="detail" data-display="detail" onclick="handleWordClick(this)">detail</span>? <span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word key-cue" data-clean="autopsy" data-display="autopsy" onclick="handleWordClick(this)">autopsy</span> <span class="word key-cue" data-clean="report" data-display="report" onclick="handleWordClick(this)">report</span> <span class="word key-cue" data-clean="disappeared" data-display="disappeared" onclick="handleWordClick(this)">disappeared</span>, <span class="word" data-clean="so" data-display="so" onclick="handleWordClick(this)">so</span> <span class="word" data-clean="we" data-display="we" onclick="handleWordClick(this)">we</span> <span class="word" data-clean="still" data-display="still" onclick="handleWordClick(this)">still</span> <span class="word" data-clean="can&#x27;t" data-display="can&#x27;t" onclick="handleWordClick(this)">can&#x27;t</span> <span class="word key-cue" data-clean="solve" data-display="solve" onclick="handleWordClick(this)">solve</span> <span class="word" data-clean="it" data-display="it" onclick="handleWordClick(this)">it</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">👑</div>
+            <div class="line-text"><span class="word" data-clean="there" data-display="There" onclick="handleWordClick(this)">There</span> <span class="word" data-clean="are" data-display="are" onclick="handleWordClick(this)">are</span> <span class="word" data-clean="three" data-display="three" onclick="handleWordClick(this)">three</span> <span class="word" data-clean="main" data-display="main" onclick="handleWordClick(this)">main</span> <span class="word" data-clean="theories" data-display="theories" onclick="handleWordClick(this)">theories</span>: <span class="word key-cue" data-clean="theory" data-display="Theory" onclick="handleWordClick(this)">Theory</span> <span class="word key-cue" data-clean="1" data-display="1" onclick="handleWordClick(this)">1</span>, &quot;<span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word key-cue" data-clean="prince&#x27;s" data-display="Prince&#x27;s" onclick="handleWordClick(this)">Prince&#x27;s</span> <span class="word key-cue" data-clean="plot" data-display="Plot" onclick="handleWordClick(this)">Plot</span>&quot;: <span class="word" data-clean="yusupov" data-display="Yusupov" onclick="handleWordClick(this)">Yusupov</span> <span class="word" data-clean="did" data-display="did" onclick="handleWordClick(this)">did</span> <span class="word" data-clean="it" data-display="it" onclick="handleWordClick(this)">it</span> <span class="word" data-clean="with" data-display="with" onclick="handleWordClick(this)">with</span> <span class="word" data-clean="politician" data-display="politician" onclick="handleWordClick(this)">politician</span> <span class="word" data-clean="vladimir" data-display="Vladimir" onclick="handleWordClick(this)">Vladimir</span> <span class="word key-cue" data-clean="purishkevich" data-display="Purishkevich" onclick="handleWordClick(this)">Purishkevich</span> <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="tsar&#x27;s" data-display="Tsar’s" onclick="handleWordClick(this)">Tsar’s</span> <span class="word" data-clean="cousin" data-display="cousin" onclick="handleWordClick(this)">cousin</span>, <span class="word key-cue" data-clean="grand" data-display="Grand" onclick="handleWordClick(this)">Grand</span> <span class="word key-cue" data-clean="duke" data-display="Duke" onclick="handleWordClick(this)">Duke</span> <span class="word key-cue" data-clean="dmitri" data-display="Dmitri" onclick="handleWordClick(this)">Dmitri</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🕵️</div>
+            <div class="line-text"><span class="word key-cue" data-clean="theory" data-display="Theory" onclick="handleWordClick(this)">Theory</span> <span class="word key-cue" data-clean="2" data-display="2" onclick="handleWordClick(this)">2</span>, &quot;<span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word key-cue" data-clean="british" data-display="British" onclick="handleWordClick(this)">British</span> <span class="word key-cue" data-clean="agent" data-display="Agent" onclick="handleWordClick(this)">Agent</span>&quot;: <span class="word key-cue" data-clean="british" data-display="British" onclick="handleWordClick(this)">British</span> <span class="word" data-clean="spy" data-display="spy" onclick="handleWordClick(this)">spy</span> <span class="word key-cue" data-clean="oswald" data-display="Oswald" onclick="handleWordClick(this)">Oswald</span> <span class="word key-cue" data-clean="rayner" data-display="Rayner" onclick="handleWordClick(this)">Rayner</span> <span class="word" data-clean="fired" data-display="fired" onclick="handleWordClick(this)">fired</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="last" data-display="last" onclick="handleWordClick(this)">last</span> <span class="word" data-clean="shot" data-display="shot" onclick="handleWordClick(this)">shot</span>, <span class="word" data-clean="because" data-display="because" onclick="handleWordClick(this)">because</span> <span class="word" data-clean="britain" data-display="Britain" onclick="handleWordClick(this)">Britain</span> <span class="word" data-clean="feared" data-display="feared" onclick="handleWordClick(this)">feared</span> <span class="word" data-clean="rasputin" data-display="Rasputin" onclick="handleWordClick(this)">Rasputin</span> <span class="word" data-clean="would" data-display="would" onclick="handleWordClick(this)">would</span> <span class="word key-cue" data-clean="end" data-display="end" onclick="handleWordClick(this)">end</span> <span class="word" data-clean="russia&#x27;s" data-display="Russia&#x27;s" onclick="handleWordClick(this)">Russia&#x27;s</span> <span class="word key-cue" data-clean="war" data-display="war" onclick="handleWordClick(this)">war</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🧙‍♂️</div>
+            <div class="line-text"><span class="word key-cue" data-clean="theory" data-display="Theory" onclick="handleWordClick(this)">Theory</span> <span class="word key-cue" data-clean="3" data-display="3" onclick="handleWordClick(this)">3</span>, &quot;<span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word key-cue" data-clean="indestructible" data-display="Indestructible" onclick="handleWordClick(this)">Indestructible</span> <span class="word key-cue" data-clean="monk" data-display="Monk" onclick="handleWordClick(this)">Monk</span>&quot;: <span class="word" data-clean="rasputin" data-display="Rasputin" onclick="handleWordClick(this)">Rasputin</span> <span class="word" data-clean="was" data-display="was" onclick="handleWordClick(this)">was</span> <span class="word" data-clean="so" data-display="so" onclick="handleWordClick(this)">so</span> <span class="word key-cue" data-clean="magical" data-display="magical" onclick="handleWordClick(this)">magical</span> <span class="word" data-clean="that" data-display="that" onclick="handleWordClick(this)">that</span> <span class="word key-cue" data-clean="poison" data-display="poison" onclick="handleWordClick(this)">poison</span> <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word key-cue" data-clean="bullets" data-display="bullets" onclick="handleWordClick(this)">bullets</span> <span class="word" data-clean="failed" data-display="failed" onclick="handleWordClick(this)">failed</span>, <span class="word" data-clean="so" data-display="so" onclick="handleWordClick(this)">so</span> <span class="word" data-clean="he" data-display="he" onclick="handleWordClick(this)">he</span> <span class="word key-cue" data-clean="drowned" data-display="drowned" onclick="handleWordClick(this)">drowned</span> <span class="word" data-clean="in" data-display="in" onclick="handleWordClick(this)">in</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="river" data-display="river" onclick="handleWordClick(this)">river</span>.</div>
+        </div>
+        
+        </div>
+    </section>
+    
+    <section class="block-card" id="block4">
+        <div class="block-header" style="background: linear-gradient(135deg, #A18CD1, #FBC2EB);">
+            <div class="block-title-row">
+                <span class="block-icon">⚖️</span>
+                <h2><span class="word" data-clean="block" data-display="BLOCK" onclick="handleWordClick(this)">BLOCK</span> <span class="word" data-clean="4" data-display="4" onclick="handleWordClick(this)">4</span> — <span class="word" data-clean="theories" data-display="THEORIES" onclick="handleWordClick(this)">THEORIES</span> <span class="word" data-clean="under" data-display="UNDER" onclick="handleWordClick(this)">UNDER</span> <span class="word" data-clean="debate" data-display="DEBATE" onclick="handleWordClick(this)">DEBATE</span></h2>
+            </div>
+            <div class="stage-note">Challenge Theory 2 &amp; introduce your team&#x27;s take</div>
+        </div>
+        <div class="cue-strip" style="background: #F3D9FA; color: #862E9C;">
+            <span class="cue-label">🔑 Memory Anchors:</span>
+            <span class="cue-pill">Rayner / Oxford</span><span class="cue-pill">No British file</span><span class="cue-pill">Revolver / lost</span><span class="cue-pill">Stories clash</span><span class="cue-pill">No proof</span><span class="cue-pill">Fairy tale</span>
+        </div>
+        <div class="block-body">
+            
+        <div class="line-card">
+            <div class="line-icon">🎓</div>
+            <div class="line-text"><span class="word" data-clean="theory" data-display="Theory" onclick="handleWordClick(this)">Theory</span> <span class="word" data-clean="2" data-display="2" onclick="handleWordClick(this)">2</span> <span class="word" data-clean="sounds" data-display="sounds" onclick="handleWordClick(this)">sounds</span> <span class="word" data-clean="exciting" data-display="exciting" onclick="handleWordClick(this)">exciting</span>, <span class="word" data-clean="but" data-display="but" onclick="handleWordClick(this)">but</span> <span class="word" data-clean="where" data-display="where" onclick="handleWordClick(this)">where</span> <span class="word" data-clean="is" data-display="is" onclick="handleWordClick(this)">is</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="proof" data-display="proof" onclick="handleWordClick(this)">proof</span>? <span class="word" data-clean="yes" data-display="Yes" onclick="handleWordClick(this)">Yes</span>, <span class="word key-cue" data-clean="oswald" data-display="Oswald" onclick="handleWordClick(this)">Oswald</span> <span class="word key-cue" data-clean="rayner" data-display="Rayner" onclick="handleWordClick(this)">Rayner</span> <span class="word" data-clean="was" data-display="was" onclick="handleWordClick(this)">was</span> <span class="word" data-clean="in" data-display="in" onclick="handleWordClick(this)">in</span> <span class="word key-cue" data-clean="petrograd" data-display="Petrograd" onclick="handleWordClick(this)">Petrograd</span> <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word" data-clean="knew" data-display="knew" onclick="handleWordClick(this)">knew</span> <span class="word" data-clean="yusupov" data-display="Yusupov" onclick="handleWordClick(this)">Yusupov</span> <span class="word" data-clean="from" data-display="from" onclick="handleWordClick(this)">from</span> <span class="word key-cue" data-clean="oxford" data-display="Oxford" onclick="handleWordClick(this)">Oxford</span>. <span class="word" data-clean="still" data-display="Still" onclick="handleWordClick(this)">Still</span>, <span class="word key-cue" data-clean="no" data-display="no" onclick="handleWordClick(this)">no</span> <span class="word key-cue" data-clean="british" data-display="British" onclick="handleWordClick(this)">British</span> <span class="word key-cue" data-clean="file" data-display="file" onclick="handleWordClick(this)">file</span> <span class="word" data-clean="says" data-display="says" onclick="handleWordClick(this)">says</span> <span class="word key-cue" data-clean="rayner" data-display="Rayner" onclick="handleWordClick(this)">Rayner</span> <span class="word" data-clean="killed" data-display="killed" onclick="handleWordClick(this)">killed</span> <span class="word" data-clean="him" data-display="him" onclick="handleWordClick(this)">him</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🔫</div>
+            <div class="line-text"><span class="word" data-clean="experts" data-display="Experts" onclick="handleWordClick(this)">Experts</span> <span class="word" data-clean="claim" data-display="claim" onclick="handleWordClick(this)">claim</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="wound" data-display="wound" onclick="handleWordClick(this)">wound</span> <span class="word" data-clean="came" data-display="came" onclick="handleWordClick(this)">came</span> <span class="word" data-clean="from" data-display="from" onclick="handleWordClick(this)">from</span> <span class="word" data-clean="a" data-display="a" onclick="handleWordClick(this)">a</span> <span class="word key-cue" data-clean="british" data-display="British" onclick="handleWordClick(this)">British</span> <span class="word key-cue" data-clean="revolver" data-display="revolver" onclick="handleWordClick(this)">revolver</span>, <span class="word" data-clean="but" data-display="but" onclick="handleWordClick(this)">but</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="bullets" data-display="bullets" onclick="handleWordClick(this)">bullets</span> <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word key-cue" data-clean="report" data-display="report" onclick="handleWordClick(this)">report</span> <span class="word" data-clean="are" data-display="are" onclick="handleWordClick(this)">are</span> <span class="word key-cue" data-clean="lost" data-display="lost" onclick="handleWordClick(this)">lost</span>. <span class="word" data-clean="we" data-display="We" onclick="handleWordClick(this)">We</span> <span class="word" data-clean="can&#x27;t" data-display="can&#x27;t" onclick="handleWordClick(this)">can&#x27;t</span> <span class="word" data-clean="check" data-display="check" onclick="handleWordClick(this)">check</span> <span class="word" data-clean="it" data-display="it" onclick="handleWordClick(this)">it</span>—<span class="word" data-clean="so" data-display="so" onclick="handleWordClick(this)">so</span> <span class="word" data-clean="it&#x27;s" data-display="it’s" onclick="handleWordClick(this)">it’s</span> <span class="word" data-clean="just" data-display="just" onclick="handleWordClick(this)">just</span> <span class="word" data-clean="an" data-display="an" onclick="handleWordClick(this)">an</span> <span class="word key-cue" data-clean="idea" data-display="idea" onclick="handleWordClick(this)">idea</span>, <span class="word key-cue" data-clean="not" data-display="not" onclick="handleWordClick(this)">not</span> <span class="word key-cue" data-clean="proof" data-display="proof" onclick="handleWordClick(this)">proof</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">🧩</div>
+            <div class="line-text"><span class="word" data-clean="so" data-display="So" onclick="handleWordClick(this)">So</span> <span class="word" data-clean="where" data-display="where" onclick="handleWordClick(this)">where</span> <span class="word" data-clean="does" data-display="does" onclick="handleWordClick(this)">does</span> <span class="word" data-clean="that" data-display="that" onclick="handleWordClick(this)">that</span> <span class="word" data-clean="leave" data-display="leave" onclick="handleWordClick(this)">leave</span> <span class="word" data-clean="us" data-display="us" onclick="handleWordClick(this)">us</span>? <span class="word" data-clean="the" data-display="The" onclick="handleWordClick(this)">The</span> <span class="word" data-clean="killers" data-display="killers" onclick="handleWordClick(this)">killers</span>&#x27; <span class="word key-cue" data-clean="stories" data-display="stories" onclick="handleWordClick(this)">stories</span> <span class="word key-cue" data-clean="clash" data-display="clash" onclick="handleWordClick(this)">clash</span>, <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="spy" data-display="spy" onclick="handleWordClick(this)">spy</span> <span class="word" data-clean="theory" data-display="theory" onclick="handleWordClick(this)">theory</span> <span class="word" data-clean="has" data-display="has" onclick="handleWordClick(this)">has</span> <span class="word key-cue" data-clean="no" data-display="no" onclick="handleWordClick(this)">no</span> <span class="word key-cue" data-clean="proof" data-display="proof" onclick="handleWordClick(this)">proof</span>, <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="magic" data-display="magic" onclick="handleWordClick(this)">magic</span> <span class="word" data-clean="theory" data-display="theory" onclick="handleWordClick(this)">theory</span> <span class="word" data-clean="is" data-display="is" onclick="handleWordClick(this)">is</span> <span class="word" data-clean="a" data-display="a" onclick="handleWordClick(this)">a</span> <span class="word key-cue" data-clean="fairy" data-display="fairy" onclick="handleWordClick(this)">fairy</span> <span class="word key-cue" data-clean="tale" data-display="tale" onclick="handleWordClick(this)">tale</span>. <span class="word" data-clean="that&#x27;s" data-display="That’s" onclick="handleWordClick(this)">That’s</span> <span class="word" data-clean="why" data-display="why" onclick="handleWordClick(this)">why</span> <span class="word" data-clean="we" data-display="we" onclick="handleWordClick(this)">we</span> <span class="word" data-clean="came" data-display="came" onclick="handleWordClick(this)">came</span> <span class="word" data-clean="up" data-display="up" onclick="handleWordClick(this)">up</span> <span class="word" data-clean="with" data-display="with" onclick="handleWordClick(this)">with</span> <span class="word" data-clean="our" data-display="our" onclick="handleWordClick(this)">our</span> <span class="word key-cue" data-clean="own" data-display="own" onclick="handleWordClick(this)">own</span> <span class="word key-cue" data-clean="take" data-display="take" onclick="handleWordClick(this)">take</span>.</div>
+        </div>
+        
+        </div>
+    </section>
+    
+    <section class="block-card" id="block5">
+        <div class="block-header" style="background: linear-gradient(135deg, #43E97B, #38F9D7);">
+            <div class="block-title-row">
+                <span class="block-icon">💡</span>
+                <h2><span class="word" data-clean="block" data-display="BLOCK" onclick="handleWordClick(this)">BLOCK</span> <span class="word" data-clean="5" data-display="5" onclick="handleWordClick(this)">5</span> — <span class="word" data-clean="your" data-display="YOUR" onclick="handleWordClick(this)">YOUR</span> <span class="word" data-clean="own" data-display="OWN" onclick="handleWordClick(this)">OWN</span> <span class="word" data-clean="answer" data-display="ANSWER" onclick="handleWordClick(this)">ANSWER</span></h2>
+            </div>
+            <div class="stage-note">State your team&#x27;s theory in 1 sentence &amp; wrap up honestly</div>
+        </div>
+        <div class="cue-strip" style="background: #D3F9D8; color: #2B8A3E;">
+            <span class="cue-label">🔑 Memory Anchors:</span>
+            <span class="cue-pill">Russian plotters</span><span class="cue-pill">Invented legend</span><span class="cue-pill">Report/bullets/witnesses gone</span><span class="cue-pill">Simplest answer</span>
+        </div>
+        <div class="block-body">
+            
+        <div class="line-card">
+            <div class="line-icon">🇷🇺</div>
+            <div class="line-text"><span class="word" data-clean="we" data-display="We" onclick="handleWordClick(this)">We</span> <span class="word" data-clean="think" data-display="think" onclick="handleWordClick(this)">think</span> <span class="word" data-clean="one" data-display="one" onclick="handleWordClick(this)">one</span> <span class="word" data-clean="of" data-display="of" onclick="handleWordClick(this)">of</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="russian" data-display="Russian" onclick="handleWordClick(this)">Russian</span> <span class="word key-cue" data-clean="plotters" data-display="plotters" onclick="handleWordClick(this)">plotters</span>—<span class="word key-cue" data-clean="purishkevich" data-display="Purishkevich" onclick="handleWordClick(this)">Purishkevich</span> <span class="word" data-clean="or" data-display="or" onclick="handleWordClick(this)">or</span> <span class="word key-cue" data-clean="grand" data-display="Grand" onclick="handleWordClick(this)">Grand</span> <span class="word key-cue" data-clean="duke" data-display="Duke" onclick="handleWordClick(this)">Duke</span> <span class="word key-cue" data-clean="dmitri" data-display="Dmitri" onclick="handleWordClick(this)">Dmitri</span>—<span class="word" data-clean="fired" data-display="fired" onclick="handleWordClick(this)">fired</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word" data-clean="last" data-display="last" onclick="handleWordClick(this)">last</span> <span class="word" data-clean="shot" data-display="shot" onclick="handleWordClick(this)">shot</span>, <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word" data-clean="they" data-display="they" onclick="handleWordClick(this)">they</span> <span class="word key-cue" data-clean="invented" data-display="invented" onclick="handleWordClick(this)">invented</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> &quot;<span class="word" data-clean="indestructible" data-display="indestructible" onclick="handleWordClick(this)">indestructible</span> <span class="word" data-clean="monk" data-display="monk" onclick="handleWordClick(this)">monk</span>&quot; <span class="word key-cue" data-clean="legend" data-display="legend" onclick="handleWordClick(this)">legend</span> <span class="word" data-clean="themselves" data-display="themselves" onclick="handleWordClick(this)">themselves</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">👻</div>
+            <div class="line-text"><span class="word key-cue" data-clean="honestly" data-display="Honestly" onclick="handleWordClick(this)">Honestly</span>, <span class="word" data-clean="we" data-display="we" onclick="handleWordClick(this)">we</span> <span class="word" data-clean="can&#x27;t" data-display="can&#x27;t" onclick="handleWordClick(this)">can&#x27;t</span> <span class="word" data-clean="fully" data-display="fully" onclick="handleWordClick(this)">fully</span> <span class="word" data-clean="prove" data-display="prove" onclick="handleWordClick(this)">prove</span> <span class="word" data-clean="it" data-display="it" onclick="handleWordClick(this)">it</span>—<span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="report" data-display="report" onclick="handleWordClick(this)">report</span>, <span class="word key-cue" data-clean="bullets" data-display="bullets" onclick="handleWordClick(this)">bullets</span>, <span class="word" data-clean="and" data-display="and" onclick="handleWordClick(this)">and</span> <span class="word key-cue" data-clean="witnesses" data-display="witnesses" onclick="handleWordClick(this)">witnesses</span> <span class="word" data-clean="are" data-display="are" onclick="handleWordClick(this)">are</span> <span class="word" data-clean="all" data-display="all" onclick="handleWordClick(this)">all</span> <span class="word key-cue" data-clean="gone" data-display="gone" onclick="handleWordClick(this)">gone</span>.</div>
+        </div>
+        
+        <div class="line-card">
+            <div class="line-icon">✨</div>
+            <div class="line-text"><span class="word" data-clean="still" data-display="Still" onclick="handleWordClick(this)">Still</span>, <span class="word" data-clean="our" data-display="our" onclick="handleWordClick(this)">our</span> <span class="word" data-clean="theory" data-display="theory" onclick="handleWordClick(this)">theory</span> <span class="word key-cue" data-clean="fits" data-display="fits" onclick="handleWordClick(this)">fits</span> <span class="word key-cue" data-clean="best" data-display="best" onclick="handleWordClick(this)">best</span> <span class="word" data-clean="because" data-display="because" onclick="handleWordClick(this)">because</span> <span class="word" data-clean="it" data-display="it" onclick="handleWordClick(this)">it</span> <span class="word" data-clean="needs" data-display="needs" onclick="handleWordClick(this)">needs</span> <span class="word key-cue" data-clean="no" data-display="no" onclick="handleWordClick(this)">no</span> <span class="word key-cue" data-clean="spies" data-display="spies" onclick="handleWordClick(this)">spies</span>, <span class="word key-cue" data-clean="magic" data-display="magic" onclick="handleWordClick(this)">magic</span>, <span class="word" data-clean="or" data-display="or" onclick="handleWordClick(this)">or</span> <span class="word key-cue" data-clean="secret" data-display="secret" onclick="handleWordClick(this)">secret</span> <span class="word key-cue" data-clean="files" data-display="files" onclick="handleWordClick(this)">files</span>. <span class="word" data-clean="sometimes" data-display="Sometimes" onclick="handleWordClick(this)">Sometimes</span> <span class="word" data-clean="the" data-display="the" onclick="handleWordClick(this)">the</span> <span class="word key-cue" data-clean="simplest" data-display="simplest" onclick="handleWordClick(this)">simplest</span> <span class="word key-cue" data-clean="answer" data-display="answer" onclick="handleWordClick(this)">answer</span> <span class="word" data-clean="is" data-display="is" onclick="handleWordClick(this)">is</span> <span class="word key-cue" data-clean="right" data-display="right" onclick="handleWordClick(this)">right</span>.</div>
+        </div>
+        
+        </div>
+    </section>
+    
+</div>
+
+<div class="translator-dock" id="translatorDock">
+  <div class="dock-info" id="dockContent">
+    <span class="dock-hint">👆 Click any word in the script above to hear it spoken and translate it into Russian!</span>
+  </div>
+  <button class="speak-btn" id="replayBtn" onclick="replayCurrent()" style="display:none;">🔊 Listen</button>
+</div>
+
+<script>
+  const DICTIONARY = {"block": "блок / раздел", "1": "один / первый", "intro": "вступление", "all": "все (хором)", "hello": "привет / здравствуйте", "3": "три / третий", "the": "(определённый артикль)", "mystery": "тайна / загадка", "leading": "основные / главные", "theories": "теории / версии", "heres": "вот что / здесь", "here's": "вот что / здесь", "here": "здесь / вот", "what": "что", "we": "мы", "know": "знаем", "for": "для / на", "sure": "наверняка / точно", "first": "во-первых / первый", "on": "в (о дате)", "night": "ночь", "of": "(родительный падеж)", "december": "декабрь / декабря", "16th": "шестнадцатое", "1916": "1916 год", "prince": "князь", "felix": "Феликс", "yusupov": "Юсупов", "invited": "пригласил", "rasputin": "Распутина", "to": "в / к", "his": "его / свой", "palace": "дворец", "second": "во-вторых / второй", "three": "три", "days": "дня / дней", "later": "позже / спустя", "body": "тело", "was": "было / был", "found": "найдено", "in": "в", "a": "(неопределённый артикль)", "frozen": "замёрзшая / ледяная", "river": "река", "with": "с", "bullet": "пулевые", "wounds": "ранения / раны", "real": "настоящий / главный", "question": "вопрос", "who": "кто", "fired": "выстрелил / сделал", "fatal": "смертельный / роковой", "shot": "выстрел", "into": "в", "forehead": "лоб", "strangest": "самая странная", "detail": "деталь / подробность", "autopsy": "вскрытие", "report": "отчёт / протокол", "disappeared": "исчез / пропал", "so": "поэтому / так что", "still": "до сих пор / всё же", "cant": "не можем", "can't": "не можем", "solve": "разгадать / раскрыть", "it": "это / её", "there": "существует / есть", "are": "есть / являются", "main": "главные / основные", "theory": "теория", "princes": "княжеский", "prince's": "княжеский", "plot": "заговор", "did": "сделал", "politician": "политик", "vladimir": "Владимир", "purishkevich": "Пуришкевич", "and": "и", "tsars": "царя", "tsar's": "царя", "cousin": "двоюродный брат", "grand": "великий", "duke": "князь", "dmitri": "Дмитрий", "2": "два / второй", "british": "британский", "agent": "агент", "spy": "шпион", "oswald": "Освальд", "rayner": "Рейнер", "last": "последний", "because": "потому что", "britain": "Британия", "feared": "опасалась / боялась", "would": "бы (частица)", "end": "закончит / прекратит", "russias": "России", "russia's": "России", "war": "войну / война", "indestructible": "неуязвимый / бессмертный", "monk": "монах / старец", "magical": "магический / сверхъестественный", "that": "что / который", "poison": "яд", "bullets": "пули", "failed": "не сработали / не помогли", "he": "он", "drowned": "утонул", "4": "четыре / четвёртый", "under": "под / на", "debate": "обсуждение / спор", "part": "часть", "challenging": "оспаривание", "sounds": "звучит", "exciting": "захватывающе / интригующе", "but": "но", "where": "где", "is": "есть / находится", "proof": "доказательство", "yes": "да", "petrograd": "Петроград", "knew": "знал", "from": "из / по", "oxford": "Оксфорд", "no": "ни один / нет", "file": "документ / архив", "says": "говорит / утверждает", "him": "его", "experts": "эксперты", "claim": "утверждают", "wound": "рана / ранение", "came": "придумали / пришли", "revolver": "револьвер", "lost": "потеряны / утрачены", "check": "проверить", "its": "это", "it's": "это", "just": "просто / лишь", "an": "(неопределённый артикль)", "idea": "идея / догадка", "not": "не", "setting": "подводка", "up": "к", "your": "ваш", "teams": "команды", "team's": "команды", "answer": "ответ", "does": "(вспомогательный глагол)", "leave": "оставляет", "us": "нас", "killers": "убийц", "killers'": "убийц", "stories": "рассказы / версии", "clash": "противоречат друг другу", "has": "имеет", "magic": "магическая", "fairy": "сказочная", "tale": "сказка / выдумка", "thats": "вот", "that's": "вот", "why": "почему", "own": "собственный", "take": "взгляд / версия", "5": "пять / пятый", "one": "одно / один", "sentence": "предложение", "think": "думаем / считаем", "russian": "русских", "plotters": "заговорщиков", "or": "или", "they": "они", "invented": "придумали / выдумали", "legend": "легенду", "themselves": "сами", "honest": "честная", "closing": "заключительная", "thought": "мысль", "honestly": "честно говоря", "fully": "полностью", "prove": "доказать", "witnesses": "свидетели", "gone": "исчезли / ушли", "our": "наша", "fits": "подходит", "best": "лучше всего", "needs": "требует / нуждается", "spies": "шпионов", "secret": "секретных", "files": "документов / досье", "sometimes": "иногда", "simplest": "самый простой", "right": "правильный / верный"};
+  let currentWord = "";
+  let activeElement = null;
+  let speechRate = 0.92;
+
+  function speakText(text, rate = 0.92) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+
+    // Normalize curly apostrophes so TTS engine reads words like "Here's" cleanly
+    const cleanSpeech = text.replace(/’/g, "'");
+    const utterance = new SpeechSynthesisUtterance(cleanSpeech);
+    utterance.lang = 'en-GB';
+    utterance.rate = rate;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const britishVoice = voices.find(v => v.lang === 'en-GB' && (v.name.includes('Google') || v.name.includes('Daniel') || v.name.includes('Natural') || v.name.includes('Kate')))
+                      || voices.find(v => v.lang === 'en-GB' || v.lang.startsWith('en_GB'))
+                      || voices.find(v => v.lang.startsWith('en'));
+    if (britishVoice) utterance.voice = britishVoice;
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  }
+
+  function handleWordClick(el) {
+    if (activeElement) {
+      activeElement.classList.remove('active-word');
+    }
+    el.classList.add('active-word');
+    activeElement = el;
+
+    const cleanKey = el.getAttribute('data-clean') || "";
+    const displayWord = el.getAttribute('data-display') || el.textContent;
+    currentWord = displayWord;
+
+    const normalized = cleanKey.toLowerCase().replace(/[^a-z0-9']/g, '');
+    const noApostrophe = normalized.replace(/'/g, '');
+    const translation = DICTIONARY[normalized] || DICTIONARY[noApostrophe] || "перевод не найден";
+
+    const dockContent = document.getElementById('dockContent');
+    dockContent.innerHTML = `
+      <span class="dock-en">${displayWord}</span>
+      <span class="dock-arrow">➔</span>
+      <span class="dock-ru">${translation}</span>
+    `;
+    document.getElementById('replayBtn').style.display = 'inline-flex';
+
+    speakText(displayWord, speechRate);
+  }
+
+  function replayCurrent() {
+    if (currentWord) {
+      speakText(currentWord, speechRate);
+    }
+  }
+
+  function speakSlow() {
+    speechRate = speechRate === 0.92 ? 0.72 : 0.92;
+    const btn = document.getElementById('speedBtn');
+    btn.textContent = speechRate === 0.92 ? "🐢 Slow Pronunciation (0.72x)" : "🇬🇧 Standard British Speed (0.92x)";
+    if (currentWord) {
+      speakText(currentWord, speechRate);
+    }
+  }
+
+  function togglePracticeMode() {
+    document.body.classList.toggle('hide-filler');
+    const btn = document.getElementById('togglePracticeBtn');
+    const isHidden = document.body.classList.contains('hide-filler');
+    btn.textContent = isHidden ? "👀 Show All Words" : "🧠 Memory Test Mode (Hide Filler Words)";
+  }
+</script>
+
+</body>
+</html>
