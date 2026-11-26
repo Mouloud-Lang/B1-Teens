@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>The North Wind and the Sun — Story Reader</title>
+<style>
+  :root {
+    --bg-deep: #0F172A;
+    --bg-indigo: #1E1B4B;
+    --accent-coral: #F43F5E;
+    --accent-amber: #F59E0B;
+    --accent-teal: #14B8A6;
+    --accent-violet: #8B5CF6;
+    --text-dark: #0F172A;
+    --text-slate: #334155;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 12% 14%, rgba(244, 63, 94, 0.55) 0%, transparent 45%),
+      radial-gradient(circle at 88% 18%, rgba(20, 184, 166, 0.55) 0%, transparent 46%),
+      radial-gradient(circle at 82% 85%, rgba(245, 158, 11, 0.48) 0%, transparent 48%),
+      radial-gradient(circle at 18% 82%, rgba(139, 92, 246, 0.62) 0%, transparent 50%),
+      linear-gradient(145deg, #0F172A 0%, #1E1B4B 52%, #111827 100%);
+    pointer-events: none;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #FFFFFF;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: max(18px, env(safe-area-inset-top)) 14px max(125px, env(safe-area-inset-bottom)) 14px;
+    touch-action: manipulation;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .top-pills {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .count-pill {
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #F8FAFC;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  .read-all-btn {
+    background: linear-gradient(135deg, #F59E0B, #F43F5E);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 9px 16px;
+    min-height: 38px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(244, 63, 94, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .read-all-btn:active { transform: scale(0.96); }
+
+  .main-title {
+    font-size: clamp(1.6rem, 6vw, 2.15rem);
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, #FFFFFF 0%, #FDE68A 50%, #A7F3D0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.28));
+  }
+
+  .editorial-card {
+    width: 100%;
+    background: linear-gradient(165deg, #FFFFFF 0%, #F8FAFC 60%, #EEF2FF 100%);
+    color: var(--text-dark);
+    border-radius: 28px;
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    box-shadow:
+      0 22px 48px rgba(0, 0, 0, 0.36),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editorial-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #F43F5E, #F59E0B, #14B8A6, #6366F1);
+  }
+
+  .card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+
+  .badge-indigo {
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    color: #4338CA;
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .badge-rose {
+    background: linear-gradient(135deg, #FFE4E6, #FECDD3);
+    color: #BE123C;
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .story-body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.14rem, 4.2vw, 1.3rem);
+    line-height: 1.95;
+    color: #1E293B;
+  }
+
+  .story-body p {
+    margin-bottom: 16px;
+  }
+  .story-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .w-token {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0 2px;
+    border-radius: 6px;
+    border-bottom: 1.5px dotted #94A3B8;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .w-token:hover {
+    background: #E0E7FF;
+    border-bottom-color: #6366F1;
+  }
+
+  .w-token.active-word {
+    background: #FEF08A;
+    color: #0F172A;
+    border-bottom: 2px solid #D97706;
+    font-weight: 700;
+  }
+
+  .q-block {
+    background: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 18px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  .q-label {
+    display: block;
+    font-weight: 800;
+    font-size: 0.98rem;
+    color: #1E293B;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .q-num {
+    display: inline-block;
+    background: linear-gradient(135deg, #14B8A6, #6366F1);
+    color: #FFFFFF;
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin-right: 6px;
+  }
+
+  .q-input {
+    width: 100%;
+    min-height: 68px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1.5px solid #CBD5E1;
+    background: #F8FAFC;
+    font-family: inherit;
+    font-size: 16px;
+    color: #0F172A;
+    resize: vertical;
+    outline: none;
+    line-height: 1.45;
+  }
+  .q-input:focus {
+    border-color: #6366F1;
+    background: #FFFFFF;
+  }
+
+  .send-pdf-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #F59E0B, #F43F5E);
+    color: #FFFFFF;
+    border: none;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 15px 20px;
+    min-height: 52px;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 12px 26px rgba(244, 63, 94, 0.36);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .send-pdf-btn:active { transform: scale(0.97); }
+
+  .share-panel {
+    display: none;
+    margin-top: 16px;
+    background: #F8FAFC;
+    border: 2px solid #14B8A6;
+    border-radius: 20px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .share-title {
+    font-weight: 900;
+    font-size: 1rem;
+    color: #0F172A;
+    margin-bottom: 4px;
+  }
+
+  .share-sub {
+    font-size: 0.84rem;
+    color: #475569;
+    margin-bottom: 12px;
+  }
+
+  .social-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .social-btn {
+    border: none;
+    border-radius: 14px;
+    padding: 11px 10px;
+    min-height: 44px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .social-btn:active { transform: scale(0.96); }
+
+  .btn-native { background: linear-gradient(135deg, #6366F1, #8B5CF6); grid-column: 1 / -1; }
+  .btn-wa { background: #22C55E; }
+  .btn-tg { background: #0EA5E9; }
+  .btn-vk { background: #2563EB; }
+  .btn-mail { background: #475569; }
+
+  .def-dock {
+    position: fixed;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(140%);
+    width: calc(100% - 28px);
+    max-width: 590px;
+    background: linear-gradient(155deg, #1E1B4B 0%, #312E81 60%, #0F766E 100%);
+    color: #FFFFFF;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-radius: 22px;
+    padding: 14px 16px;
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.52);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    z-index: 50;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .def-dock.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .def-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .def-word {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #FDE047;
+    margin-bottom: 2px;
+  }
+
+  .def-meaning {
+    font-size: 0.92rem;
+    color: #E2E8F0;
+    line-height: 1.35;
+  }
+
+  .dock-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .dock-listen-btn {
+    background: linear-gradient(135deg, #F59E0B, #F43F5E);
+    color: #FFFFFF;
+    border: none;
+    font-size: 0.88rem;
+    font-weight: 800;
+    padding: 10px 15px;
+    min-height: 42px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(244, 63, 94, 0.4);
+  }
+  .dock-listen-btn:active { transform: scale(0.95); }
+
+  .dock-close-btn {
+    background: rgba(255, 255, 255, 0.16);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dock-close-btn:active { background: rgba(255, 255, 255, 0.28); }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="top-pills">
+    <div class="count-pill">AESOP'S FABLES • READER</div>
+    <button class="read-all-btn" type="button" onclick="readFullStory()">🔊 Read Story</button>
+  </div>
+
+  <h1 class="main-title">The North Wind and the Sun</h1>
+
+  <div class="editorial-card">
+    <div class="card-header-row">
+      <span class="badge-indigo">👆 Tap any word for audio &amp; meaning</span>
+      <span class="badge-rose">British English</span>
+    </div>
+    <div class="story-body" id="storyContainer"></div>
+  </div>
+
+  <div class="editorial-card">
+    <div class="card-header-row">
+      <span class="badge-indigo">✍️ Retelling Guide</span>
+      <span class="badge-rose">6 Questions</span>
+    </div>
+
+    <div id="questionsList">
+      <div class="q-block">
+        <label class="q-label" for="ans1"><span class="q-num">1</span>Who were the two characters in the story, and what did they argue about?</label>
+        <textarea class="q-input" id="ans1" placeholder="Write your answer here..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label" for="ans2"><span class="q-num">2</span>Who did they see walking down the road, and what was he wearing?</label>
+        <textarea class="q-input" id="ans2" placeholder="Write your answer here..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label" for="ans3"><span class="q-num">3</span>What game or test did the North Wind and the Sun decide to play?</label>
+        <textarea class="q-input" id="ans3" placeholder="Write your answer here..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label" for="ans4"><span class="q-num">4</span>What did the North Wind do first, and how did the young man react?</label>
+        <textarea class="q-input" id="ans4" placeholder="Write your answer here..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label" for="ans5"><span class="q-num">5</span>What did the Sun do next, and why did the man take off his coat?</label>
+        <textarea class="q-input" id="ans5" placeholder="Write your answer here..."></textarea>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label" for="ans6"><span class="q-num">6</span>Who won the contest, and what lesson does this story teach us?</label>
+        <textarea class="q-input" id="ans6" placeholder="Write your answer here..."></textarea>
+      </div>
+    </div>
+
+    <button class="send-pdf-btn" type="button" onclick="prepareAndSharePDF()">📤 Send Work as PDF</button>
+
+    <div class="share-panel" id="sharePanel">
+      <div class="share-title">✅ Your PDF is ready to send!</div>
+      <div class="share-sub">Choose where you would like to share your answers:</div>
+      <div class="social-grid">
+        <button class="social-btn btn-native" type="button" onclick="shareNativeFile()">📱 Share PDF File Directly</button>
+        <a class="social-btn btn-wa" id="waLink" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a class="social-btn btn-tg" id="tgLink" href="#" target="_blank" rel="noopener">✈️ Telegram</a>
+        <a class="social-btn btn-vk" id="vkLink" href="#" target="_blank" rel="noopener">🌐 VK</a>
+        <a class="social-btn btn-mail" id="mailLink" href="#">✉️ Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="def-dock" id="defDock">
+  <div class="def-info">
+    <div class="def-word" id="dockWord">wind</div>
+    <div class="def-meaning" id="dockMeaning">moving air outside</div>
+  </div>
+  <div class="dock-actions">
+    <button class="dock-listen-btn" type="button" onclick="replayCurrentWord()">🔊 Listen</button>
+    <button class="dock-close-btn" type="button" title="Close" onclick="closeDefDock()">✕</button>
+  </div>
+</div>
+
+<script>
+  const STORY_PARAGRAPHS = [
+    "One sunny morning, the North Wind and the Sun had a big argument. Each one believed he was stronger than the other. While they were talking, they saw a young man walking down a quiet country road. He was wearing a thick, heavy winter coat.",
+    "The Sun smiled and had a clever idea. He said, \"Let us see who can make that traveller take off his coat. The one who succeeds is the strongest.\" The North Wind quickly agreed and decided to go first.",
+    "The North Wind blew as hard as he could. Cold air rushed through the trees, and dark clouds covered the sky. The young man felt very cold and pulled his coat tightly around his body. The harder the wind blew, the tighter the man held his coat. At last, the North Wind grew tired and moved back.",
+    "Next, it was the Sun's turn. He came out from behind the clouds and shone softly on the road. Soon, the air became warm and pleasant. The young man stopped feeling cold, opened his coat, and wiped his forehead. As the Sun shone brighter, the man grew too hot. Finally, he took off his heavy coat and sat down to rest under a shady tree.",
+    "The North Wind looked at the Sun with respect. He realized that kindness and warmth are often much stronger than anger and force."
+  ];
+
+  const DICT = {
+    "one": "the number 1; a single person or thing",
+    "sunny": "bright with light from the sun",
+    "morning": "the early part of the day before noon",
+    "the": "used before a noun to point to a specific thing",
+    "north": "the direction to your left when you face the rising sun",
+    "wind": "air that moves naturally outside",
+    "and": "used to join two words or ideas together",
+    "sun": "the bright star in the sky that gives light and heat",
+    "had": "past of 'have'; experienced or owned something",
+    "a": "one single thing or person",
+    "big": "large in size or very important",
+    "argument": "an angry talk between people who do not agree",
+    "each": "every single one separately",
+    "believed": "thought that something was true",
+    "he": "a male person or character",
+    "was": "past of 'is'; existed or happened",
+    "stronger": "having more power or strength than another",
+    "than": "used when comparing two things",
+    "other": "the second of two; different",
+    "while": "during the time that something is happening",
+    "they": "two or more people or things",
+    "were": "past plural of 'be'",
+    "talking": "speaking words to someone",
+    "saw": "past of 'see'; noticed with the eyes",
+    "young": "not old; in an early stage of life",
+    "man": "an adult male person",
+    "walking": "moving forward on foot step by step",
+    "down": "along or toward a lower place",
+    "quiet": "making very little or no noise",
+    "country": "land outside cities with fields and farms",
+    "road": "a hard path made for cars and people to travel on",
+    "wearing": "having clothes on your body",
+    "thick": "made of heavy material that keeps out the cold",
+    "heavy": "weighing a lot; thick and warm",
+    "winter": "the coldest season of the year",
+    "coat": "a warm outer piece of clothing with sleeves",
+    "smiled": "curved the mouth upward to show happiness",
+    "clever": "smart and quick to think of good ideas",
+    "idea": "a thought or plan in your mind",
+    "said": "past of 'say'; spoke words",
+    "let": "allow or suggest doing something together",
+    "us": "you and me together",
+    "see": "look with your eyes or find out",
+    "who": "which person",
+    "can": "be able to do something",
+    "make": "cause someone to do something",
+    "that": "used to point to a specific person or thing",
+    "traveller": "a person who is going from one place to another",
+    "take": "remove or carry something away",
+    "off": "away from a place or off the body",
+    "his": "belonging to him",
+    "succeeds": "does what he tried to do; wins",
+    "is": "exists or happens now",
+    "strongest": "having the most power of all",
+    "quickly": "fast; in a short time",
+    "agreed": "said yes to an idea or plan",
+    "decided": "chose what to do after thinking",
+    "to": "in the direction of, or before a verb",
+    "go": "move or take a turn",
+    "first": "before anyone or anything else",
+    "blew": "past of 'blow'; pushed air out strongly",
+    "as": "to the same degree; while",
+    "hard": "with a lot of force or effort",
+    "could": "was able to",
+    "cold": "having a low temperature; not warm",
+    "air": "the invisible gas all around us that we breathe",
+    "rushed": "moved very fast with force",
+    "through": "from one side to the other inside something",
+    "trees": "tall plants with wooden trunks and leaves",
+    "dark": "having very little light; almost black",
+    "clouds": "white or grey shapes floating in the sky",
+    "covered": "lay over the top of something",
+    "sky": "the open space above the earth where clouds are",
+    "felt": "past of 'feel'; had a physical feeling or emotion",
+    "very": "extremely; to a high degree",
+    "pulled": "held and drew something closer to yourself",
+    "tightly": "firmly and closely so nothing gets in",
+    "around": "on all sides of something",
+    "body": "the whole physical structure of a person",
+    "harder": "with even more force",
+    "tighter": "even more firmly and closely",
+    "held": "past of 'hold'; kept in the hands",
+    "at": "used to show a point in time or place",
+    "last": "after a long time; finally",
+    "grew": "became",
+    "tired": "needing rest or sleep",
+    "moved": "changed position or went away",
+    "back": "toward the rear; away from someone",
+    "next": "coming right after the previous one",
+    "it": "refers to a thing, situation, or turn",
+    "sun's": "belonging to the sun",
+    "turn": "your chance to do something in a game",
+    "came": "past of 'come'; moved toward",
+    "out": "away from inside or behind something",
+    "from": "starting at a place or time",
+    "behind": "at the back of something",
+    "shone": "past of 'shine'; gave out bright light and heat",
+    "softly": "gently and quietly",
+    "on": "touching or covering a surface",
+    "soon": "in a short time from now",
+    "became": "started to be",
+    "warm": "pleasantly hot; not cold",
+    "pleasant": "nice and comfortable",
+    "stopped": "finished doing something; no longer did it",
+    "feeling": "experiencing a sensation like heat or cold",
+    "opened": "unfastened the front of a coat or shirt",
+    "wiped": "rubbed lightly to clean away sweat or water",
+    "forehead": "the flat part of the face above the eyes",
+    "brighter": "giving out more light and heat",
+    "too": "more than is comfortable or needed",
+    "hot": "having a high temperature",
+    "finally": "at the end, after a long wait",
+    "took": "past of 'take'; removed",
+    "sat": "past of 'sit'; rested on a seat or the ground",
+    "rest": "relax and stop working or walking",
+    "under": "below or beneath something",
+    "shady": "protected from direct sunlight by trees",
+    "tree": "a tall plant with branches and leaves",
+    "looked": "directed the eyes toward someone",
+    "with": "having or showing a feeling",
+    "respect": "a feeling of admiration for someone good or wise",
+    "realized": "understood something clearly",
+    "kindness": "being friendly, gentle, and helpful",
+    "warmth": "comfortable heat, or a kind and friendly feeling",
+    "are": "plural form of 'is'",
+    "often": "many times; frequently",
+    "much": "a lot",
+    "anger": "a strong feeling of being mad or upset",
+    "force": "strong physical power or push"
+  };
+
+  let currentWord = "";
+  let cachedPdfBlob = null;
+  let cachedShareText = "";
+
+  function speakBritish(text) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    setTimeout(function() {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "en-GB";
+      utter.rate = 0.92;
+      utter.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const gbVoice = voices.find(function(v) {
+        return v.lang === "en-GB" && (
+          v.name.indexOf("Google") !== -1 ||
+          v.name.indexOf("Daniel") !== -1 ||
+          v.name.indexOf("Natural") !== -1 ||
+          v.name.indexOf("Kate") !== -1
+        );
+      }) || voices.find(function(v) {
+        return v.lang === "en-GB" || v.lang.indexOf("en_GB") === 0;
+      }) || voices.find(function(v) {
+        return v.lang.indexOf("en") === 0;
+      });
+
+      if (gbVoice) utter.voice = gbVoice;
+      window.speechSynthesis.speak(utter);
+    }, 35);
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function() {
+      window.speechSynthesis.getVoices();
+    };
+  }
+
+  function renderStory() {
+    const container = document.getElementById("storyContainer");
+    container.innerHTML = "";
+
+    STORY_PARAGRAPHS.forEach(function(para) {
+      const pEl = document.createElement("p");
+      const parts = para.split(/([A-Za-z']+)/);
+
+      parts.forEach(function(part) {
+        if (!part) return;
+        if (/^[A-Za-z']+$/.test(part)) {
+          const span = document.createElement("span");
+          span.className = "w-token";
+          span.textContent = part;
+          span.onclick = function() {
+            handleWordTap(span, part);
+          };
+          pEl.appendChild(span);
+        } else {
+          pEl.appendChild(document.createTextNode(part));
+        }
+      });
+
+      container.appendChild(pEl);
+    });
+  }
+
+  function handleWordTap(el, rawWord) {
+    document.querySelectorAll(".w-token.active-word").forEach(function(t) {
+      t.classList.remove("active-word");
+    });
+    el.classList.add("active-word");
+
+    const cleanKey = rawWord.toLowerCase();
+    currentWord = rawWord;
+
+    const meaning = DICT[cleanKey] || "a word from the story";
+    document.getElementById("dockWord").textContent = rawWord;
+    document.getElementById("dockMeaning").textContent = meaning;
+    document.getElementById("defDock").classList.add("visible");
+
+    speakBritish(rawWord);
+  }
+
+  function replayCurrentWord() {
+    if (currentWord) {
+      speakBritish(currentWord);
+    }
+  }
+
+  function closeDefDock() {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    document.getElementById("defDock").classList.remove("visible");
+    document.querySelectorAll(".w-token.active-word").forEach(function(t) {
+      t.classList.remove("active-word");
+    });
+  }
+
+  function readFullStory() {
+    closeDefDock();
+    speakBritish(STORY_PARAGRAPHS.join(" "));
+  }
+
+  function wrapLines(ctx, text, maxWidth) {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let line = "";
+    for (let i = 0; i < words.length; i++) {
+      const testLine = line ? line + " " + words[i] : words[i];
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = words[i];
+      } else {
+        line = testLine;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function buildWorksheetPdfBlob(qaItems) {
+    const pageW = 1240;
+    const pageH = 1754;
+    const margin = 80;
+    const contentW = pageW - margin * 2;
+
+    const pages = [];
+    function newPage() {
+      const c = document.createElement("canvas");
+      c.width = pageW;
+      c.height = pageH;
+      const cx = c.getContext("2d");
+      cx.fillStyle = "#FFFFFF";
+      cx.fillRect(0, 0, pageW, pageH);
+      cx.fillStyle = "#1E1B4B";
+      cx.fillRect(0, 0, pageW, 18);
+      pages.push(c);
+      return cx;
+    }
+
+    let ctx = newPage();
+    let y = 90;
+
+    ctx.fillStyle = "#1E1B4B";
+    ctx.font = "bold 40px Georgia, serif";
+    ctx.fillText("The North Wind and the Sun — Retelling Answers", margin, y);
+    y += 38;
+
+    ctx.strokeStyle = "#CBD5E1";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(margin, y);
+    ctx.lineTo(pageW - margin, y);
+    ctx.stroke();
+    y += 45;
+
+    qaItems.forEach(function(item, idx) {
+      ctx.font = "bold 26px Arial, sans-serif";
+      const qLines = wrapLines(ctx, (idx + 1) + ". " + item.question, contentW - 30);
+
+      ctx.font = "24px Georgia, serif";
+      const ansText = item.answer ? item.answer : "(No answer written)";
+      const aLines = wrapLines(ctx, ansText, contentW - 40);
+
+      const blockH = qLines.length * 36 + aLines.length * 34 + 54;
+      if (y + blockH > pageH - 80) {
+        ctx = newPage();
+        y = 85;
+      }
+
+      ctx.fillStyle = "#F8FAFC";
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 2;
+      ctx.fillRect(margin, y - 28, contentW, blockH - 16);
+      ctx.strokeRect(margin, y - 28, contentW, blockH - 16);
+
+      ctx.fillStyle = "#1E1B4B";
+      ctx.font = "bold 26px Arial, sans-serif";
+      qLines.forEach(function(line) {
+        ctx.fillText(line, margin + 18, y);
+        y += 36;
+      });
+
+      y += 6;
+      ctx.fillStyle = item.answer ? "#0F172A" : "#94A3B8";
+      ctx.font = "24px Georgia, serif";
+      aLines.forEach(function(line) {
+        ctx.fillText(line, margin + 24, y);
+        y += 34;
+      });
+
+      y += 34;
+    });
+
+    const pageJpegs = pages.map(function(c) {
+      const dataUrl = c.toDataURL("image/jpeg", 0.92);
+      const bin = atob(dataUrl.split(",")[1]);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return { bytes: bytes, w: c.width, h: c.height };
+    });
+
+    const encoder = new TextEncoder();
+    const chunks = [];
+    const offsets = [0];
+    let byteLen = 0;
+
+    function pushStr(s) {
+      const b = encoder.encode(s);
+      chunks.push(b);
+      byteLen += b.length;
+    }
+    function pushBytes(b) {
+      chunks.push(b);
+      byteLen += b.length;
+    }
+    function startObj(id) {
+      offsets[id] = byteLen;
+      pushStr(id + " 0 obj\n");
+    }
+
+    pushStr("%PDF-1.4\n");
+
+    const n = pageJpegs.length;
+    const kids = [];
+    for (let i = 0; i < n; i++) kids.push((3 + i * 3) + " 0 R");
+
+    startObj(1);
+    pushStr("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+
+    startObj(2);
+    pushStr("<< /Type /Pages /Kids [ " + kids.join(" ") + " ] /Count " + n + " >>\nendobj\n");
+
+    for (let i = 0; i < n; i++) {
+      const pObj = 3 + i * 3;
+      const cObj = 4 + i * 3;
+      const imObj = 5 + i * 3;
+      const jpg = pageJpegs[i];
+
+      startObj(pObj);
+      pushStr("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 " + imObj + " 0 R >> >> /Contents " + cObj + " 0 R >>\nendobj\n");
+
+      const streamStr = "q 595.28 0 0 841.89 0 0 cm /Im0 Do Q\n";
+      startObj(cObj);
+      pushStr("<< /Length " + streamStr.length + " >>\nstream\n" + streamStr + "endstream\nendobj\n");
+
+      startObj(imObj);
+      pushStr("<< /Type /XObject /Subtype /Image /Width " + jpg.w + " /Height " + jpg.h + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpg.bytes.length + " >>\nstream\n");
+      pushBytes(jpg.bytes);
+      pushStr("\nendstream\nendobj\n");
+    }
+
+    const totalObjs = 2 + n * 3;
+    const xrefPos = byteLen;
+    pushStr("xref\n0 " + (totalObjs + 1) + "\n0000000000 65535 f \n");
+    for (let i = 1; i <= totalObjs; i++) {
+      pushStr(String(offsets[i]).padStart(10, "0") + " 00000 n \n");
+    }
+    pushStr("trailer\n<< /Size " + (totalObjs + 1) + " /Root 1 0 R >>\nstartxref\n" + xrefPos + "\n%%EOF");
+
+    return new Blob(chunks, { type: "application/pdf" });
+  }
+
+  function prepareAndSharePDF() {
+    const questions = [
+      "Who were the two characters in the story, and what did they argue about?",
+      "Who did they see walking down the road, and what was he wearing?",
+      "What game or test did the North Wind and the Sun decide to play?",
+      "What did the North Wind do first, and how did the young man react?",
+      "What did the Sun do next, and why did the man take off his coat?",
+      "Who won the contest, and what lesson does this story teach us?"
+    ];
+
+    const qaItems = questions.map(function(q, idx) {
+      const val = document.getElementById("ans" + (idx + 1)).value.trim();
+      return { question: q, answer: val };
+    });
+
+    cachedPdfBlob = buildWorksheetPdfBlob(qaItems);
+
+    const summaryLines = qaItems.map(function(item, idx) {
+      return (idx + 1) + ". " + item.question + "\nAnswer: " + (item.answer || "—");
+    }).join("\n\n");
+
+    cachedShareText = "The North Wind and the Sun — Retelling Answers:\n\n" + summaryLines;
+    const encodedText = encodeURIComponent(cachedShareText);
+    const encodedSubject = encodeURIComponent("The North Wind and the Sun — Story Retelling");
+
+    document.getElementById("waLink").href = "https://api.whatsapp.com/send?text=" + encodedText;
+    document.getElementById("tgLink").href = "https://t.me/share/url?url=" + encodeURIComponent("https://fable-reader") + "&text=" + encodedText;
+    document.getElementById("vkLink").href = "https://vk.com/share.php?title=" + encodedSubject + "&comment=" + encodedText;
+    document.getElementById("mailLink").href = "mailto:?subject=" + encodedSubject + "&body=" + encodedText;
+
+    const panel = document.getElementById("sharePanel");
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    shareNativeFile();
+  }
+
+  async function shareNativeFile() {
+    if (!cachedPdfBlob) return;
+    const pdfFile = new File([cachedPdfBlob], "North_Wind_and_Sun_Retelling.pdf", {
+      type: "application/pdf"
+    });
+
+    if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+      try {
+        await navigator.share({
+          title: "The North Wind and the Sun — Retelling",
+          text: "Here are my answers for The North Wind and the Sun.",
+          files: [pdfFile]
+        });
+      } catch (err) {
+        // User cancelled share sheet; social buttons remain visible below
+      }
+    }
+  }
+
+  renderStory();
+</script>
+
+</body>
+</html>
